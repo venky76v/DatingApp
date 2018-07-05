@@ -28,14 +28,21 @@ namespace DatingApp.API.Data {
 
         public async Task<User> RegisterUser (User user, string password) 
         {
-            byte[] passwordHash, passwordSalt;
-            CreatePasswordHash(password, out passwordHash, out passwordSalt);
-            user.PasswordSalt = passwordSalt;
-            user.PasswordHash = passwordHash;
+            try
+            {
+                byte[] passwordHash, passwordSalt;
+                CreatePasswordHash(password, out passwordHash, out passwordSalt);
+                user.PasswordSalt = passwordSalt;
+                user.PasswordHash = passwordHash;
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-            return user;
+                await _context.Users.AddAsync(user);
+                await _context.SaveChangesAsync();
+                return user;                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task<bool> UserExists (string username) 

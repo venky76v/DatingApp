@@ -21,9 +21,9 @@ namespace DatingApp.API.Controllers {
         }
 
         [HttpPost ("register")]
-        public async Task<IActionResult> Register ([FromBody] UserForRegisterDto userForRegisterDto) {
-
-            userForRegisterDto.Username = userForRegisterDto.Username.ToLower ();
+        public async Task<IActionResult> Register ([FromBody] UserForRegisterDto userForRegisterDto) 
+        {
+            userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
             if (await _authRepository.UserExists (userForRegisterDto.Username))
                 ModelState.AddModelError ("Username", "Username already taken");
 
@@ -35,7 +35,7 @@ namespace DatingApp.API.Controllers {
                 Username = userForRegisterDto.Username
             };
 
-            var createdUser = await _authRepository.RegisterUser (userToCreate, userForRegisterDto.Password);
+            var createdUser = await _authRepository.RegisterUser(userToCreate, userForRegisterDto.Password);
 
             return StatusCode (201);
         }

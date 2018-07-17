@@ -21,9 +21,9 @@ namespace DatingApp.API.Controllers {
         }
 
         [HttpPost ("register")]
-        public async Task<IActionResult> Register ([FromBody] UserForRegisterDto userForRegisterDto) 
-        {
-            userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
+        public async Task<IActionResult> Register ([FromBody] UserForRegisterDto userForRegisterDto) {
+            if (!string.IsNullOrWhiteSpace (userForRegisterDto.Username))
+                userForRegisterDto.Username = userForRegisterDto.Username.ToLower ();
             if (await _authRepository.UserExists (userForRegisterDto.Username))
                 ModelState.AddModelError ("Username", "Username already taken");
 
@@ -35,13 +35,15 @@ namespace DatingApp.API.Controllers {
                 Username = userForRegisterDto.Username
             };
 
-            var createdUser = await _authRepository.RegisterUser(userToCreate, userForRegisterDto.Password);
+            var createdUser = await _authRepository.RegisterUser (userToCreate, userForRegisterDto.Password);
 
             return StatusCode (201);
         }
 
         [HttpPost ("login")]
         public async Task<IActionResult> Login ([FromBody] UserForLoginDto userForLoginDto) {
+            throw new Exception ("Computer says no!!!");
+
             var userFromAuthRepository = await _authRepository.Login (userForLoginDto.Username.ToLower (), userForLoginDto.Password);
 
             if (userFromAuthRepository == null)
@@ -49,7 +51,7 @@ namespace DatingApp.API.Controllers {
 
             // generate token using JSON Web Tokens
             var tokenHanlder = new JwtSecurityTokenHandler ();
-            var key = Encoding.ASCII.GetBytes(_config.GetSection("AppSettings:Token").Value);
+            var key = Encoding.ASCII.GetBytes (_config.GetSection ("AppSettings:Token").Value);
             var tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity (new Claim[] {
                 new Claim (ClaimTypes.NameIdentifier, userFromAuthRepository.Id.ToString ()),

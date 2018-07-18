@@ -7,6 +7,7 @@ import { ValueComponent } from './value/value.component';
 import { HttpModule } from '@angular/http';
 import { NavComponent } from './nav/nav.component';
 import { AuthService } from './_services/auth.service';
+import { AlertifyService } from './_services/alertify.service';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 
@@ -25,7 +26,8 @@ import { RegisterComponent } from './register/register.component';
       FormsModule
    ],
    providers: [
-      AuthService
+      AuthService,
+      AlertifyService
    ],
    bootstrap: [
       AppComponent

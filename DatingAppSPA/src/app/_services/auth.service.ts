@@ -1,9 +1,11 @@
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { map, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { HttpClient } from '@angular/common/http';
+import { UserLogin } from '../models/userLogin';
+import { IP } from '../models/IP';
 
 @Injectable()
 
@@ -12,13 +14,21 @@ export class AuthService {
   userToken: any;
   decodedToken: any;
   jwtHelper = new JwtHelperService();
-  ipAddress: any;
 
 
   constructor(private http: Http, private httpClient: HttpClient) { }
 
-  login(model: any) {
-    return this.http.post(this.baseUrl + 'login', model, this.requestOptions()).pipe(map((response: Response) => {
+  login(model: any, ipAddress: string) {
+    let userLoginModel = new UserLogin();
+    userLoginModel.Username = model.username;
+    userLoginModel.Password = model.password;
+    userLoginModel.LastLoginIP = ipAddress;
+
+    console.log(userLoginModel.Username);
+    console.log(userLoginModel.Password);
+    console.log(userLoginModel.LastLoginIP);
+
+    return this.http.post(this.baseUrl + 'login', userLoginModel, this.requestOptions()).pipe(map((response: Response) => {
       const user = response.json();
       if (user) {
         localStorage.setItem('token', user.tokenString);
@@ -69,10 +79,21 @@ export class AuthService {
     );
   }
 
-  getClientIPAddres() {
-    this.httpClient.get('https://jsonip.com')
-    .subscribe(data => {
-      this.ipAddress = data.ip;
-    });
+  getClientIPAddress(): Observable<IP> {
+    const headers = new HttpHeaders();
+    headers.set('Access-Control-Allow-Origin', '*')
+           .set('Access-Control-Expose-Headers', '*')
+           .set('Content-Type', 'application/json')
+           .set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE')
+           .set('Access-Control-Allow-Headers', '*');
+
+    return this.httpClient.get<IP>('https://api.ipify.org?format=json', {headers: headers}).pipe(map(response => response || {}),
+      catchError(this.handleErrorObs)
+    );
+  }
+
+  private handleErrorObs(error: HttpErrorResponse): Observable<any> {
+    console.error('observable error: ', error);
+    return throwError(error);
   }
 }

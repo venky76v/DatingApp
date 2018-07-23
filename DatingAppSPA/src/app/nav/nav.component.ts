@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
 import { AlertifyService } from '../_services/alertify.service';
@@ -10,13 +11,22 @@ import { AlertifyService } from '../_services/alertify.service';
 
 export class NavComponent implements OnInit {
   model: any = {};
-  constructor(public authService: AuthService, private alertify: AlertifyService) { }
+  privateIP;
+  publicIP;
+
+  constructor(public authService: AuthService, private alertify: AlertifyService, private http: HttpClient) {
+    this.http.get('https://api.ipify.org?format=json').subscribe(data => {
+      this.publicIP = data['ip'];
+      console.log(this.publicIP);
+   });
+  }
 
   ngOnInit() {
   }
 
   login() {
-    this.authService.login(this.model).subscribe(data => {
+    console.log('ip address in login method', this.publicIP);
+    this.authService.login(this.model, this.publicIP).subscribe(data => {
       this.alertify.success('logged in successfully');
     }, error => {
       this.alertify.error(error);

@@ -17,7 +17,6 @@ export class NavComponent implements OnInit {
   constructor(public authService: AuthService, private alertify: AlertifyService, private http: HttpClient) {
     this.http.get('https://api.ipify.org?format=json').subscribe(data => {
       this.publicIP = data['ip'];
-      console.log(this.publicIP);
    });
   }
 
@@ -25,7 +24,6 @@ export class NavComponent implements OnInit {
   }
 
   login() {
-    console.log('ip address in login method', this.publicIP);
     this.authService.login(this.model, this.publicIP).subscribe(data => {
       this.alertify.success('logged in successfully');
     }, error => {
@@ -41,7 +39,5 @@ export class NavComponent implements OnInit {
 
   loggedIn() {
     return this.authService.loggedIn();
-    // const tokenFromLocalStorage = localStorage.getItem('token');
-    // return !!tokenFromLocalStorage;
   }
 }

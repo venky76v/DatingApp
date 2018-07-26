@@ -4,7 +4,8 @@ using DatingApp.API.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DatingApp.API.Data {
-    public class AuthRepository : IAuthRepository {
+    public class AuthRepository : IAuthRepository 
+    {
         private readonly DataContext _context;
         public AuthRepository (DataContext context) 
         {
@@ -12,7 +13,7 @@ namespace DatingApp.API.Data {
         }
 
         #region INTERFACE IMPLEMENTATION
-        public async Task<User> Login (string username, string password) 
+        public async Task<User> Login(string username, string password, string ipAddress) 
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
@@ -22,11 +23,16 @@ namespace DatingApp.API.Data {
             if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
                 return null;
             
+            user.LastLogin = DateTime.Now;
+            user.LastLoginIP = ipAddress;
+            _context.Users.Update(user);
+            _context.SaveChanges();
+
             // auth successful
             return user;
         }
 
-        public async Task<User> RegisterUser (User user, string password) 
+        public async Task<User> RegisterUser(User user, string password) 
         {
             try
             {

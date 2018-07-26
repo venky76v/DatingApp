@@ -5,7 +5,6 @@ import { map, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { UserLogin } from '../models/userLogin';
-import { IP } from '../models/IP';
 
 @Injectable()
 
@@ -24,10 +23,6 @@ export class AuthService {
     userLoginModel.Password = model.password;
     userLoginModel.LastLoginIP = ipAddress;
 
-    console.log(userLoginModel.Username);
-    console.log(userLoginModel.Password);
-    console.log(userLoginModel.LastLoginIP);
-
     return this.http.post(this.baseUrl + 'login', userLoginModel, this.requestOptions()).pipe(map((response: Response) => {
       const user = response.json();
       if (user) {
@@ -44,11 +39,14 @@ export class AuthService {
 
   loggedIn() {
     const tokenFromLocalStorage = localStorage.getItem('token');
-    // return !!tokenFromLocalStorage;
     if (tokenFromLocalStorage === null) {
-      return true;
+      return false;
     } else {
-      return this.jwtHelper.isTokenExpired(tokenFromLocalStorage);
+      if (this.jwtHelper.isTokenExpired(tokenFromLocalStorage)) {
+        return false;
+      } else {
+        return true;
+      }
     }
   }
 
@@ -76,19 +74,6 @@ export class AuthService {
 
     return throwError(
       modelStateErrors || 'Server Error'
-    );
-  }
-
-  getClientIPAddress(): Observable<IP> {
-    const headers = new HttpHeaders();
-    headers.set('Access-Control-Allow-Origin', '*')
-           .set('Access-Control-Expose-Headers', '*')
-           .set('Content-Type', 'application/json')
-           .set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE')
-           .set('Access-Control-Allow-Headers', '*');
-
-    return this.httpClient.get<IP>('https://api.ipify.org?format=json', {headers: headers}).pipe(map(response => response || {}),
-      catchError(this.handleErrorObs)
     );
   }
 

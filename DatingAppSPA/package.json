@@ -23,10 +23,12 @@
     "@auth0/angular-jwt": "^2.0.0",
     "alertifyjs": "^1.11.1",
     "angular2-jwt": "^0.2.3",
-    "bootstrap": "^3.3.7",
+    "bootstrap": "^4.1.1",
+    "bootswatch": "^4.1.1",
     "core-js": "^2.5.4",
     "font-awesome": "^4.7.0",
     "fontawesome": "^4.7.2",
+    "ngx-bootstrap": "^3.0.1",
     "rxjs": "^6.0.0",
     "zone.js": "^0.8.26"
   },

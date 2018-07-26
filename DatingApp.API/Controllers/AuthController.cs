@@ -6,16 +6,21 @@ using System.Threading.Tasks;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
 using DatingApp.API.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace DatingApp.API.Controllers {
+namespace DatingApp.API.Controllers 
+{
     [Route ("/api/[controller]")]
-    public class AuthController : Controller {
+    public class AuthController : Controller 
+    {
         private readonly IAuthRepository _authRepository;
         private readonly IConfiguration _config;
-        public AuthController (IAuthRepository authRepository, IConfiguration config) {
+        private readonly IHttpContextAccessor _accessor;
+        public AuthController (IAuthRepository authRepository, IConfiguration config, IHttpContextAccessor accessor) {
+            _accessor = accessor;
             _config = config;
             _authRepository = authRepository;
         }
@@ -41,10 +46,13 @@ namespace DatingApp.API.Controllers {
         }
 
         [HttpPost ("login")]
-        public async Task<IActionResult> Login ([FromBody] UserForLoginDto userForLoginDto) {
+        public async Task<IActionResult> Login ([FromBody] UserForLoginDto userForLoginDto) 
+        {
             //throw new Exception ("Computer says no!!!");
+            var fromIPAddress = _accessor.HttpContext.Connection.RemoteIpAddress.ToString();
 
-            var userFromAuthRepository = await _authRepository.Login (userForLoginDto.Username.ToLower (), userForLoginDto.Password);
+            var userFromAuthRepository = await _authRepository.Login(
+                userForLoginDto.Username.ToLower (), userForLoginDto.Password, userForLoginDto.LastLoginIP);
 
             if (userFromAuthRepository == null)
                 return Unauthorized ();

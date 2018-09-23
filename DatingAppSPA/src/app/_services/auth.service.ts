@@ -5,11 +5,12 @@ import { map, catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { UserLogin } from '../models/userLogin';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 
 export class AuthService {
-  baseUrl = 'http://localhost:5000/api/auth/';
+  baseUrl = environment.apiUrl + 'auth/';
   userToken: any;
   decodedToken: any;
   jwtHelper = new JwtHelperService();

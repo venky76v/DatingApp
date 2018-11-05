@@ -60,7 +60,8 @@
               </form>
             </tab>
             <tab heading="Edit Photos">
-              <p>Photo Edit / Upload will go here ...</p>
+              <app-photo-editor [photos]="user.photos"
+                (refreshMemberOnPhotoChange)="updateMainPhoto($event)"></app-photo-editor>
             </tab>
           </tabset>
         </div>
